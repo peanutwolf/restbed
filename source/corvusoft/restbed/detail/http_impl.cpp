@@ -181,6 +181,37 @@ namespace restbed
                 {
                     context.add_verify_path( settings->get_certificate_authority_pool( ) );
                 }
+
+                if ( settings->has_enabled_client_authentication( ) ) 
+                {
+                    auto filename = settings->get_certificate_chain( );
+                    
+                    if ( not filename.empty( ) )
+                    {
+                        context.use_certificate_chain_file( filename );
+                    }
+                    
+                    filename = settings->get_certificate( );
+                    
+                    if ( not filename.empty( ) )
+                    {
+                        context.use_certificate_file( filename, asio::ssl::context::pem );
+                    }
+                    
+                    filename = settings->get_private_key( );
+                    
+                    if ( not filename.empty( ) )
+                    {
+                        context.use_private_key_file( filename, asio::ssl::context::pem );
+                    }
+                    
+                    filename = settings->get_private_rsa_key( );
+                    
+                    if ( not filename.empty( ) )
+                    {
+                        context.use_rsa_private_key_file( filename, asio::ssl::context::pem );
+                    }       
+                }
                 
                 socket = make_shared< asio::ssl::stream< asio::ip::tcp::socket > >( *request->m_pimpl->m_io_service, context );
                 socket->set_verify_mode( asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert );
