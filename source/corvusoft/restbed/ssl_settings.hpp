@@ -59,6 +59,8 @@ namespace restbed
             bool has_enabled_default_workarounds( void ) const;
             
             bool has_enabled_single_diffie_hellman_use( void ) const;
+
+            bool has_enabled_client_authentication( void ) const;
             
             //Getters
             uint16_t get_port( void ) const;
@@ -107,6 +109,8 @@ namespace restbed
             void set_certificate_chain( const Uri& value );
             
             void set_certificate_authority_pool( const Uri& value );
+
+            void set_client_authentication_enabled( const bool value );
             
             void set_passphrase( const std::string& value );
             

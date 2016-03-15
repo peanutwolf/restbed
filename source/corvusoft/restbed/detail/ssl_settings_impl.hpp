@@ -49,6 +49,8 @@ namespace restbed
             
             bool m_single_diffie_hellman_use_enabled = true;
             
+            bool m_client_authentication_enabled = false;
+            
             std::string m_bind_address = "";
             
             std::string m_passphrase = "";

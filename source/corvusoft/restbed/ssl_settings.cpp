@@ -77,6 +77,11 @@ namespace restbed
     {
         return m_pimpl->m_single_diffie_hellman_use_enabled;
     }
+
+    bool SSLSettings::has_enabled_client_authentication( void ) const
+    {
+        return m_pimpl->m_client_authentication_enabled;
+    }
     
     uint16_t SSLSettings::get_port( void ) const
     {
@@ -191,6 +196,11 @@ namespace restbed
     void SSLSettings::set_certificate_authority_pool( const Uri& value )
     {
         m_pimpl->m_certificate_authority_pool = String::remove( "file://", value.to_string( ), String::CASE_INSENSITIVE );
+    }
+
+    void SSLSettings::set_client_authentication_enabled( const bool value )
+    {
+        m_pimpl->m_client_authentication_enabled = value;
     }
     
     void SSLSettings::set_passphrase( const string& value )

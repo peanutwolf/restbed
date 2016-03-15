@@ -190,7 +190,6 @@ namespace restbed
             if ( m_ssl_settings not_eq nullptr )
             {
                 m_ssl_context = make_shared< asio::ssl::context >( asio::ssl::context::sslv23 );
-                m_ssl_context->set_default_verify_paths( );
                 
                 auto passphrase = m_ssl_settings->get_passphrase( );
                 m_ssl_context->set_password_callback( [ passphrase ]( size_t, asio::ssl::context::password_purpose )
@@ -210,6 +209,10 @@ namespace restbed
                 if ( not filename.empty( ) )
                 {
                     m_ssl_context->add_verify_path( filename );
+                }
+                else
+                {
+                    m_ssl_context->set_default_verify_paths( );
                 }
                 
                 filename = m_ssl_settings->get_certificate_chain( );
@@ -238,6 +241,11 @@ namespace restbed
                 if ( not filename.empty( ) )
                 {
                     m_ssl_context->use_rsa_private_key_file( filename, asio::ssl::context::pem );
+                }
+
+                if ( m_ssl_settings->has_enabled_client_authentication( ) ) 
+                {
+                    m_ssl_context->set_verify_mode ( asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert );
                 }
                 
                 asio::ssl::context::options options = 0;
