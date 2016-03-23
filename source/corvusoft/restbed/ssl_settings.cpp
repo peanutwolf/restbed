@@ -78,6 +78,11 @@ namespace restbed
         return m_pimpl->m_single_diffie_hellman_use_enabled;
     }
 
+    bool SSLSettings::has_enabled_server_authentication ( void ) const
+    {
+        return m_pimpl->m_server_authentication_enabled;
+    }
+
     bool SSLSettings::has_enabled_client_authentication( void ) const
     {
         return m_pimpl->m_client_authentication_enabled;
@@ -201,6 +206,11 @@ namespace restbed
     void SSLSettings::set_client_authentication_enabled( const bool value )
     {
         m_pimpl->m_client_authentication_enabled = value;
+    }
+    
+    void SSLSettings::set_server_authentication_enabled( const bool value )
+    {
+        m_pimpl->m_server_authentication_enabled = value;
     }
     
     void SSLSettings::set_passphrase( const string& value )

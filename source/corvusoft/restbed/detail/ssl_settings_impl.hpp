@@ -51,6 +51,8 @@ namespace restbed
             
             bool m_client_authentication_enabled = false;
             
+            bool m_server_authentication_enabled = true;
+            
             std::string m_bind_address = "";
             
             std::string m_passphrase = "";

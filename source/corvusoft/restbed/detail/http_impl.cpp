@@ -171,17 +171,6 @@ namespace restbed
             
             if ( settings not_eq nullptr )
             {
-                const auto pool = settings->get_certificate_authority_pool( );
-                
-                if ( pool.empty( ) )
-                {
-                    context.set_default_verify_paths( );
-                }
-                else
-                {
-                    context.add_verify_path( settings->get_certificate_authority_pool( ) );
-                }
-
                 if ( settings->has_enabled_client_authentication( ) ) 
                 {
                     auto filename = settings->get_certificate_chain( );
@@ -212,9 +201,29 @@ namespace restbed
                         context.use_rsa_private_key_file( filename, asio::ssl::context::pem );
                     }       
                 }
+
+                if ( settings->has_enabled_server_authentication( ) )
+                {
+                    const auto pool = settings->get_certificate_authority_pool( );
+                    
+                    if ( pool.empty( ) )
+                    {
+                        context.set_default_verify_paths( );
+                    }
+                    else
+                    {
+                        context.add_verify_path( settings->get_certificate_authority_pool( ) );
+                    }
+                    socket = make_shared< asio::ssl::stream< asio::ip::tcp::socket > >( *request->m_pimpl->m_io_service, context );
+                    socket->set_verify_mode( asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert );
+                }
+                else
+                {
+                    socket = make_shared< asio::ssl::stream< asio::ip::tcp::socket > >( *request->m_pimpl->m_io_service, context );
+                    socket->set_verify_mode( asio::ssl::verify_none );
+                }
+
                 
-                socket = make_shared< asio::ssl::stream< asio::ip::tcp::socket > >( *request->m_pimpl->m_io_service, context );
-                socket->set_verify_mode( asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert );
             }
             else
             {
