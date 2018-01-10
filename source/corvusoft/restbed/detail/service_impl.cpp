@@ -74,6 +74,7 @@ using asio::signal_set;
 using asio::ip::address;
 using asio::socket_base;
 using asio::system_error;
+using asio::const_buffer;
 
 namespace restbed
 {
@@ -129,7 +130,7 @@ namespace restbed
                 }
                 else
                 {
-                    m_acceptor = make_shared< tcp::acceptor >( *m_io_service, tcp::endpoint( tcp::v6( ), m_settings->get_port( ) ) );
+                    m_acceptor = make_shared< tcp::acceptor >( *m_io_service, tcp::endpoint( tcp::v4( ), m_settings->get_port( ) ) );
                 }
                 
                 m_acceptor->set_option( socket_base::reuse_address( true ) );
@@ -208,7 +209,8 @@ namespace restbed
                 
                 if ( not filename.empty( ) )
                 {
-                    m_ssl_context->add_verify_path( filename );
+					m_ssl_context->load_verify_file(filename);
+                    //m_ssl_context->add_verify_path( filename );
                 }
                 else
                 {
@@ -228,7 +230,21 @@ namespace restbed
                 {
                     m_ssl_context->use_certificate_file( filename, asio::ssl::context::pem );
                 }
-                
+
+				auto ans1_buf = m_ssl_settings->get_certificate_buf();
+				if (not ans1_buf.empty())
+				{
+					const const_buffer cert_buf_tmp(ans1_buf.data(), ans1_buf.size());
+					m_ssl_context->use_certificate(cert_buf_tmp, asio::ssl::context::asn1);
+				}
+
+				ans1_buf = m_ssl_settings->get_ca_certificate_buf();
+				if (not ans1_buf.empty())
+				{
+					const const_buffer ca_cert_buf_tmp(ans1_buf.data(), ans1_buf.size());
+					m_ssl_context->add_certificate_authority(ca_cert_buf_tmp);
+				}
+
                 filename = m_ssl_settings->get_private_key( );
                 
                 if ( not filename.empty( ) )
@@ -236,6 +252,14 @@ namespace restbed
                     m_ssl_context->use_private_key_file( filename, asio::ssl::context::pem );
                 }
                 
+				ans1_buf = m_ssl_settings->get_private_key_buf();
+
+				if (not ans1_buf.empty())
+				{
+					const const_buffer key_buf_tmp(ans1_buf.data(), ans1_buf.size());
+					m_ssl_context->use_private_key(key_buf_tmp, asio::ssl::context::asn1);
+				}
+
                 filename = m_ssl_settings->get_private_rsa_key( );
                 
                 if ( not filename.empty( ) )
@@ -245,7 +269,7 @@ namespace restbed
 
                 if ( m_ssl_settings->has_enabled_client_authentication( ) ) 
                 {
-                    m_ssl_context->set_verify_mode ( asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert );
+					m_ssl_context->set_verify_mode(asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert);
                 }
                 
                 asio::ssl::context::options options = 0;
@@ -257,6 +281,7 @@ namespace restbed
                 options = ( m_ssl_settings->has_enabled_compression( ) ) ? options : options | asio::ssl::context::no_compression;
                 options = ( m_ssl_settings->has_enabled_default_workarounds( ) ) ? options | asio::ssl::context::default_workarounds : options;
                 options = ( m_ssl_settings->has_enabled_single_diffie_hellman_use( ) ) ? options | asio::ssl::context::single_dh_use : options;
+				options = options | SSL_OP_NO_TICKET;
                 m_ssl_context->set_options( options );
                 
                 if ( not m_ssl_settings->get_bind_address( ).empty( ) )
@@ -266,7 +291,7 @@ namespace restbed
                 }
                 else
                 {
-                    m_ssl_acceptor = make_shared< tcp::acceptor >( *m_io_service, tcp::endpoint( tcp::v6( ), m_ssl_settings->get_port( ) ) );
+                    m_ssl_acceptor = make_shared< tcp::acceptor >( *m_io_service, tcp::endpoint( tcp::v4( ), m_ssl_settings->get_port( ) ) );
                 }
                 
                 m_ssl_acceptor->set_option( socket_base::reuse_address( true ) );

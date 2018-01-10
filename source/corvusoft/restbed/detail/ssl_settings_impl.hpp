@@ -68,6 +68,12 @@ namespace restbed
             std::string m_certificate_authority_pool = "";
             
             std::string m_temporary_diffie_hellman = "";
+
+			std::vector<unsigned char> m_private_key_buf;
+
+			std::vector<unsigned char> m_certicate_buf;
+
+			std::vector<unsigned char> m_ca_certicate_buf;
         };
     }
 }

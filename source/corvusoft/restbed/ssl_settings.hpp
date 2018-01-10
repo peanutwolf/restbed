@@ -70,10 +70,16 @@ namespace restbed
             std::string get_bind_address( void ) const;
             
             std::string get_certificate( void ) const;
+
+			std::vector<unsigned char> &get_certificate_buf(void) const;
+
+			std::vector<unsigned char> &get_ca_certificate_buf(void) const;
             
             std::string get_passphrase( void ) const;
             
             std::string get_private_key( void ) const;
+
+			std::vector<unsigned char> &get_private_key_buf(void) const;
             
             std::string get_private_rsa_key( void ) const;
             
@@ -107,6 +113,10 @@ namespace restbed
             void set_single_diffie_hellman_use_enabled( const bool value );
             
             void set_certificate( const Uri& value );
+
+			void set_certificate(const unsigned char *cert, size_t cert_size);
+
+			void set_ca_certificate(const unsigned char *ca_cert, size_t ca_cert_size);
             
             void set_certificate_chain( const Uri& value );
             
@@ -119,6 +129,8 @@ namespace restbed
             void set_passphrase( const std::string& value );
             
             void set_private_key( const Uri& value );
+
+			void set_private_key(const unsigned char *key, size_t key_size);
             
             void set_private_rsa_key( const Uri& value );
             

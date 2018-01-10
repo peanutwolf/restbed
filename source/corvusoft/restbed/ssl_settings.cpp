@@ -14,6 +14,7 @@
 
 //System Namespaces
 using std::string;
+using std::vector;
 using std::unique_ptr;
 
 //Project Namespaces
@@ -102,6 +103,16 @@ namespace restbed
     {
         return m_pimpl->m_certificate;
     }
+
+	std::vector<unsigned char> &SSLSettings::get_certificate_buf(void) const
+	{
+		return m_pimpl->m_certicate_buf;
+	}
+
+	std::vector<unsigned char> &SSLSettings::get_ca_certificate_buf(void) const
+	{
+		return m_pimpl->m_ca_certicate_buf;
+	}
     
     string SSLSettings::get_passphrase( void ) const
     {
@@ -112,6 +123,11 @@ namespace restbed
     {
         return m_pimpl->m_private_key;
     }
+
+	vector<unsigned char> &SSLSettings::get_private_key_buf(void) const
+	{
+		return m_pimpl->m_private_key_buf;
+	}
     
     string SSLSettings::get_private_rsa_key( void ) const
     {
@@ -192,6 +208,18 @@ namespace restbed
     {
         m_pimpl->m_certificate = String::remove( "file://", value.to_string( ), String::CASE_INSENSITIVE );
     }
+
+	void SSLSettings::set_certificate(const unsigned char *cert, size_t cert_size) 
+	{
+		m_pimpl->m_certicate_buf.clear();
+		m_pimpl->m_certicate_buf.insert(m_pimpl->m_certicate_buf.begin(), &cert[0], &cert[cert_size]);
+	}
+
+	void SSLSettings::set_ca_certificate(const unsigned char *ca_cert, size_t ca_cert_size)
+	{
+		m_pimpl->m_ca_certicate_buf.clear();
+		m_pimpl->m_ca_certicate_buf.insert(m_pimpl->m_ca_certicate_buf.begin(), &ca_cert[0], &ca_cert[ca_cert_size]);
+	}
     
     void SSLSettings::set_certificate_chain( const Uri& value )
     {
@@ -222,6 +250,12 @@ namespace restbed
     {
         m_pimpl->m_private_key = String::remove( "file://", value.to_string( ), String::CASE_INSENSITIVE );
     }
+
+	void SSLSettings::set_private_key(const unsigned char *key, size_t key_size) 
+	{
+		m_pimpl->m_private_key_buf.clear();
+		m_pimpl->m_private_key_buf.insert(m_pimpl->m_private_key_buf.begin(), &key[0], &key[key_size]);
+	}
     
     void SSLSettings::set_private_rsa_key( const Uri& value )
     {
