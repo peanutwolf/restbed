@@ -103,9 +103,16 @@ Build
 
 ```bash
 git clone --recursive https://github.com/corvusoft/restbed.git
-mkdir restbed/build
-cd restbed/build
-cmake [-DBUILD_SSL=NO] ..
+
+cd dependency/openssl
+perl Configure {VC-WIN64A | VC-WIN32}
+ms\do_win64a
+nmake -f ms\nt.mak //for static openssl
+nmake -f ms\ntdll.mak //for dynamic openssl
+
+mkdir ../../restbed/build
+cd ../..restbed/build
+cmake [-DBUILD_SSL=YES] ..
 make install
 make test
 ```
